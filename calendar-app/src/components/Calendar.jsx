@@ -1,23 +1,32 @@
-// src/components/Calendar.js
-import React, { useState } from 'react';
+// src/components/Calendar.jsx
+import React from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 
 const MyCalendar = ({ selectedDates, onDateChange }) => {
-  const [date, setDate] = useState(new Date());
+  const handleDateClick = (date) => {
+    const dateIndex = selectedDates.findIndex(
+      (selectedDate) => selectedDate.getTime() === date.getTime()
+    );
 
-  const handleChange = (date) => {
-    setDate(date);
-    onDateChange(date);
+    if (dateIndex > -1) {
+      // Date is already selected, remove it
+      const newDates = selectedDates.filter(
+        (selectedDate) => selectedDate.getTime() !== date.getTime()
+      );
+      onDateChange(newDates);
+    } else {
+      // Date is not selected, add it
+      onDateChange([...selectedDates, date]);
+    }
   };
 
   return (
     <div>
       <Calendar
-        onChange={handleChange}
-        value={date}
-        tileClassName={({ date, view }) =>
-          selectedDates.find((d) => d.getTime() === date.getTime())
+        onClickDay={handleDateClick}
+        tileClassName={({ date }) =>
+          selectedDates.some((d) => d.getTime() === date.getTime())
             ? 'bg-blue-500 text-white'
             : ''
         }
